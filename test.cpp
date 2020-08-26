@@ -25,7 +25,7 @@ class LyseClient
 
         void getPosts()
         {
-
+            std::string psts[5] = {"", "", "", "", ""};
             
             if(curl)
             {
@@ -58,10 +58,13 @@ class LyseClient
                     try
                     {
                         j = json::parse(*httpData.get());
-                    
+                        int i = 0;
                         for(auto it : j["posts"])
                         {
                             std::cout << it["title"] << std::endl;
+
+                            psts[i] = it["title"];
+                            i++;
                         }
                     }
                     catch(const std::exception& e)
@@ -75,6 +78,8 @@ class LyseClient
                 }
 
             } 
+
+            std::cout << *(psts+2) << std::endl;
             // Check for errors
             if(res != CURLE_OK)
             {
