@@ -4,6 +4,7 @@
 #include <memory>
 #include "json.hpp"
 #include <unistd.h>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -23,10 +24,10 @@ class LyseClient
             std::cout << "Initialized class" << std::endl;
         }
 
-        void getPosts()
+        std::vector<std::string> getPosts()
         {
-            std::string psts[5] = {"", "", "", "", ""};
-            
+            std::vector<std::string> postsPtr;
+
             if(curl)
             {
                     // Set target URL
@@ -54,18 +55,18 @@ class LyseClient
 
                 if(httpCode == 200)
                 {
+
                     json j;
                     try
                     {
                         j = json::parse(*httpData.get());
-                        int i = 0;
+
                         for(auto it : j["posts"])
                         {
-                            std::cout << it["title"] << std::endl;
-
-                            psts[i] = it["title"];
-                            i++;
+                            //std::cout << it["title"] << std::endl;
+                            postsPtr.push_back(it["title"]);
                         }
+                        //std::cout << postsPtr[0] << std::endl;
                     }
                     catch(const std::exception& e)
                     {
@@ -76,10 +77,12 @@ class LyseClient
                 {
                     std::cout << httpCode << std::endl;
                 }
+                return postsPtr;
 
-            } 
+            }
+            
 
-            std::cout << *(psts+2) << std::endl;
+            
             // Check for errors
             if(res != CURLE_OK)
             {
@@ -87,6 +90,45 @@ class LyseClient
             }
             
             // Cleanup
+            //curl_easy_cleanup(curl);
+        }
+
+        int makePost(std::string title)
+        {
+            if(curl)
+            {
+                    // Set target URL
+                    curl_easy_setopt(curl, CURLOPT_URL, "www.lysegroenn.com/api/test/userPosts");
+
+                    // Specify GET method
+                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "title=fromCPP");
+
+                    // Response information.
+                    long httpCode(0);
+
+                    // Make request
+                    res = curl_easy_perform(curl);
+                    // Get http response
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+                    std::cout << httpCode << std::endl;
+   
+                    //curl_easy_cleanup(curl);
+
+                    if(httpCode == 201)
+                    {
+                        std::cout << "Post created" << std::endl;
+                        return 0;
+                    } else 
+                    {
+                        std::cout << httpCode << std::endl;
+                        return 1;
+                    }
+            }
+        }
+
+        void cleanup()
+        {
             curl_easy_cleanup(curl);
         } 
 
@@ -109,7 +151,14 @@ int main(int argc, char** argv)
     curl_global_init(CURL_GLOBAL_ALL);
 
     LyseClient Adam;
-    Adam.getPosts();
+    Adam.makePost("hej");
+    std::vector<std::string> Posts = Adam.getPosts();
+
+    for(int i = 0; i < Posts.size(); i++)
+    {
+        std::cout << Posts[i] << std::endl;
+    }
+    Adam.cleanup();
 
     curl_global_cleanup();
     return 0;
