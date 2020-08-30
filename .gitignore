@@ -1,0 +1,5 @@
+*
+!.gitignore
+!json.hpp
+!test.cpp
+!main.cpp
