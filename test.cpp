@@ -31,7 +31,7 @@ class LyseClient
             if(curl)
             {
                     // Set target URL
-                    curl_easy_setopt(curl, CURLOPT_URL, "www.lysegroenn.com/api/test/posts");
+                    curl_easy_setopt(curl, CURLOPT_URL, "https://www.lysegroenn.com/api/test/posts");
 
                     // Specify GET method
                     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
@@ -98,7 +98,7 @@ class LyseClient
             if(curl)
             {
                     // Set target URL
-                    curl_easy_setopt(curl, CURLOPT_URL, "www.lysegroenn.com/api/test/userPosts");
+                    curl_easy_setopt(curl, CURLOPT_URL, "https://www.lysegroenn.com/api/test/userPosts");
 
                     // Specify GET method
                     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "title=fromCPP");
